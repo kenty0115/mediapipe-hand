@@ -1,3 +1,5 @@
+import os
+
 import mediapipe as mp
 import cv2
 
@@ -9,10 +11,16 @@ mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.hands
 
 obj_per = 2
-img_path = "img/"
-obj_img = cv2.imread(img_path + "background.jpg")
+data_dir_path = u"./img/"
+file_list = os.listdir(r'./img/')
 
-obj_class = Background(obj_img)
+img_list = []
+for file_name in file_list:
+    root, ext = os.path.splitext(file_name)
+    if ext == u'.png' or u'.jpeg' or u'.jpg':
+        abs_name = data_dir_path + '/' + file_name
+        image = cv2.imread(abs_name)
+        img_list.append(Background(image))
 
 
 first_loop = True
@@ -32,8 +40,9 @@ with mp_holistic.Hands(
 
         if first_loop is True:
             first_loop = False
-            obj_class.resize_per(high, wide, obj_per)
-            print(obj_class.img.shape)
+            for img in img_list:
+                img.resize_per(high, wide, obj_per)
+                print(img.img.shape)
         image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
         results = hands.process(image)
@@ -42,36 +51,42 @@ with mp_holistic.Hands(
 
         if results.multi_hand_landmarks:
             hand_cnt = 0
-            for j, hand_landmarks in enumerate(results.multi_hand_landmarks):
+            hand_list = []
+            for hand_landmarks in results.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
                     image, hand_landmarks, mp_holistic.HAND_CONNECTIONS)
                 hand = Hand(hand_landmarks.landmark, wide, high)
-                try:
-                    if obj_class.ispointin(hand.centerx, hand.centery) is True:
-                        if hand.ishand_close() is True and obj_class.move_flag is False:
-                            obj_class.set_abspoint(hand.centerx, hand.centery)
+                hand_list.append(hand)
 
-                        if obj_class.move_flag is True and hand.ishand_open() is True:
-                            obj_class.fin_change()
+                for img in img_list:
+                    if img.ispointin(hand.centerx, hand.centery) is True:
+                        if hand.ishand_close() is True and img.move_flag is False:
+                            img.set_abspoint(hand.centerx, hand.centery)
 
-                    if obj_class.move_flag is True and hand_cnt == 0:
+                        if img.move_flag is True and hand.ishand_open() is True:
+                            img.fin_change()
+
+                    if img.move_flag is True and hand_cnt == 0:
                         hand_cnt += 1
-                        obj_class.change_point(
+                        img.change_point(
                             hand.centerx, hand.centery, wide, high)
 
-                except Exception:
-                    pass
+        ner_index = []
+        for img in enumerate(img_list):
 
-        if obj_class.move_flag is True:
-            obj_class.del_frame()
-            obj_class.add_frame(5, [0, 0, 255])
-            image[obj_class.point_y:obj_class.point_y+obj_class.img.shape[0],
-                  obj_class.point_x:obj_class.point_x+obj_class.img.shape[1]] = obj_class.img
-        else:
-            obj_class.del_frame()
-            obj_class.add_frame(5, [0, 255, 0])
-            image[obj_class.point_y:obj_class.point_y+obj_class.img.shape[0],
-                  obj_class.point_x:obj_class.point_x+obj_class.img.shape[1]] = obj_class.img
+            pass
+
+        for img in img_list:
+            if img.move_flag is True:
+                img.del_frame()
+                img.add_frame(5, [0, 0, 255])
+                image[img.point_y:img.point_y+img.img.shape[0],
+                      img.point_x:img.point_x+img.img.shape[1]] = img.img
+            else:
+                img.del_frame()
+                img.add_frame(5, [0, 255, 0])
+                image[img.point_y:img.point_y+img.img.shape[0],
+                      img.point_x:img.point_x+img.img.shape[1]] = img.img
 
         cv2.imshow('MediaPipe Hands', image)
         if cv2.waitKey(5) & 0xFF == 27:
