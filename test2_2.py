@@ -65,13 +65,13 @@ with mp_holistic.Hands(
         if obj_class.move_flag is True:
             obj_class.del_frame()
             obj_class.add_frame(5, [0, 0, 255])
-            image[obj_class.img_pointy:obj_class.img_pointy+obj_class.img.shape[0],
-                  obj_class.img_pointx:obj_class.img_pointx+obj_class.img.shape[1]] = obj_class.img
+            image[obj_class.point_y:obj_class.point_y+obj_class.img.shape[0],
+                  obj_class.point_x:obj_class.point_x+obj_class.img.shape[1]] = obj_class.img
         else:
             obj_class.del_frame()
             obj_class.add_frame(5, [0, 255, 0])
-            image[obj_class.img_pointy:obj_class.img_pointy+obj_class.img.shape[0],
-                  obj_class.img_pointx:obj_class.img_pointx+obj_class.img.shape[1]] = obj_class.img
+            image[obj_class.point_y:obj_class.point_y+obj_class.img.shape[0],
+                  obj_class.point_x:obj_class.point_x+obj_class.img.shape[1]] = obj_class.img
 
         cv2.imshow('MediaPipe Hands', image)
         if cv2.waitKey(5) & 0xFF == 27:

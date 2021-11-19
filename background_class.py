@@ -6,11 +6,13 @@ class Background(object):
 
     def __init__(self, img):
         self.img = img
-        self.imfr_pic = 0
-        self.img_pointx = 0
-        self.img_pointy = 0
-        self.img_absx = 0
-        self.img_absy = 0
+        self.fr_pic = 0
+        self.point_x = 0
+        self.point_y = 0
+        self.center_x = int(self.img.shape[1]/2)
+        self.center_y = int(self.img.shape[0]/2)
+        self.abs_x = 0
+        self.abs_y = 0
         self.move_flag = False
 
     def add_frame(self, fr_pic: int, color: list):
@@ -28,31 +30,31 @@ class Background(object):
         array = np.insert(array, [array.shape[1]], bk2, axis=1)
         self.img = array
 
-        self.imfr_pic = self.imfr_pic + fr_pic
+        self.fr_pic = self.fr_pic + fr_pic
 
         return array
 
     def del_frame(self):
-        if self.imfr_pic == 0:
+        if self.fr_pic == 0:
             return 0
         else:
             array = self.img
 
-            array = np.delete(array, np.s_[0:self.imfr_pic], 0)
+            array = np.delete(array, np.s_[0:self.fr_pic], 0)
             array = np.delete(
-                array, np.s_[array.shape[0]-self.imfr_pic:array.shape[0]], 0)
+                array, np.s_[array.shape[0]-self.fr_pic:array.shape[0]], 0)
 
-            array = np.delete(array, np.s_[0:self.imfr_pic], 1)
+            array = np.delete(array, np.s_[0:self.fr_pic], 1)
             array = np.delete(
-                array, np.s_[array.shape[1]-self.imfr_pic:array.shape[1]], 1)
+                array, np.s_[array.shape[1]-self.fr_pic:array.shape[1]], 1)
 
             self.img = array
-            self.imfr_pic = 0
+            self.fr_pic = 0
 
         return array
 
     def ispointin(self, pointx, pointy):
-        return (self.img_pointx <= pointx <= self.img_pointx + self.img.shape[1]) and (self.img_pointy <= pointy <= self.img_pointy + self.img.shape[0])
+        return (self.point_x <= pointx <= self.point_x + self.img.shape[1]) and (self.point_y <= pointy <= self.point_y + self.img.shape[0])
 
     def resize_per(self, high: int, wide: int, per: int):
         if self.img.shape[0]/high > self.img.shape[1]/wide:
@@ -70,28 +72,28 @@ class Background(object):
 
     def set_abspoint(self, pointx, pointy):
         self.move_flag = True
-        self.img_absx = pointx
-        self.img_absy = pointy
+        self.abs_x = pointx
+        self.abs_y = pointy
 
     def change_point(self, pointx, pointy, wide, high):
-        self.img_pointx += pointx - self.img_absx
-        self.img_pointy += pointy - self.img_absy
-        self.img_absx = pointx
-        self.img_absy = pointy
+        self.point_x += pointx - self.abs_x
+        self.point_y += pointy - self.abs_y
+        self.abs_x = pointx
+        self.abs_y = pointy
 
-        if self.img_pointx < 0:
-            self.img_pointx = 0
-        elif self.img_pointx > wide - self.img.shape[1]:
-            self.img_pointx = wide - self.img.shape[1]
+        if self.point_x < 0:
+            self.point_x = 0
+        elif self.point_x > wide - self.img.shape[1]:
+            self.point_x = wide - self.img.shape[1]
 
-        if self.img_pointy < 0:
-            self.img_pointy = 0
-        elif self.img_pointy > high - self.img.shape[0]:
-            self.img_pointy = high - self.img.shape[0]
+        if self.point_y < 0:
+            self.point_y = 0
+        elif self.point_y > high - self.img.shape[0]:
+            self.point_y = high - self.img.shape[0]
 
         pass
 
     def fin_change(self):
         self.move_flag = False
-        self.img_absx = 0
-        self.img_absy = 0
+        self.abs_x = 0
+        self.abs_y = 0
