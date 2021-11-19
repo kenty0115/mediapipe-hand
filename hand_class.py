@@ -37,7 +37,6 @@ class Hand(object):
         return self.hand_num == 4
 
     def ishand_close(self):
-        print("handnum", self.hand_num)
         return self.hand_num == 0
 
     def _hand_num(self):
@@ -58,5 +57,4 @@ class Hand(object):
         index = 20
         cnt -= comp_point(self.centerx, self.centery,
                           self.hand_point[index][0], self.hand_point[index][1], self.hand_point[index - 2][0], self.hand_point[index - 2][1])
-        print(cnt)
         return cnt

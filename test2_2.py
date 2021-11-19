@@ -1,18 +1,16 @@
 import mediapipe as mp
 import cv2
-import pickle
 
 from hand_class import Hand
 from background_class import Background
 
-clf = pickle.load(open('pickle/hand_model.pickle', 'rb'))
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.hands
 
-img_par = 1
-img_path = "img/background.jpg"
-obj_img = cv2.imread(img_path)
+obj_per = 2
+img_path = "img/"
+obj_img = cv2.imread(img_path + "background.jpg")
 
 obj_class = Background(obj_img)
 
@@ -34,7 +32,7 @@ with mp_holistic.Hands(
 
         if first_loop is True:
             first_loop = False
-            obj_class.resize_per(high, wide, 2)
+            obj_class.resize_per(high, wide, obj_per)
             print(obj_class.img.shape)
         image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
@@ -45,7 +43,6 @@ with mp_holistic.Hands(
         if results.multi_hand_landmarks:
             hand_cnt = 0
             for j, hand_landmarks in enumerate(results.multi_hand_landmarks):
-                flag = False
                 mp_drawing.draw_landmarks(
                     image, hand_landmarks, mp_holistic.HAND_CONNECTIONS)
                 hand = Hand(hand_landmarks.landmark, wide, high)
@@ -55,7 +52,7 @@ with mp_holistic.Hands(
                             obj_class.set_abspoint(hand.centerx, hand.centery)
 
                         if obj_class.move_flag is True and hand.ishand_open() is True:
-                            obj_class.move_flag = False
+                            obj_class.fin_change()
 
                     if obj_class.move_flag is True and hand_cnt == 0:
                         hand_cnt += 1

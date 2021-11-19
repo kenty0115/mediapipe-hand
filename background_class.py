@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-from numpy.core.fromnumeric import resize
 
 
 class Background(object):
@@ -91,3 +90,8 @@ class Background(object):
             self.img_pointy = high - self.img.shape[0]
 
         pass
+
+    def fin_change(self):
+        self.move_flag = False
+        self.img_absx = 0
+        self.img_absy = 0
