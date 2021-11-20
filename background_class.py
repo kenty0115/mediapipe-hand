@@ -9,8 +9,6 @@ class Background(object):
         self.fr_pic = 0
         self.point_x = 0
         self.point_y = 0
-        self.center_x = int(self.img.shape[1]/2)
-        self.center_y = int(self.img.shape[0]/2)
         self.abs_x = 0
         self.abs_y = 0
         self.move_flag = False
@@ -97,3 +95,6 @@ class Background(object):
         self.move_flag = False
         self.abs_x = 0
         self.abs_y = 0
+
+    def center(self):
+        return self.point_x + int(self.img.shape[1]/2), self.point_y + int(self.img.shape[0]/2)

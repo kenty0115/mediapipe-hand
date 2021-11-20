@@ -4,6 +4,7 @@ import mediapipe as mp
 import cv2
 
 from hand_class import Hand
+from hand_class import comp_point
 from background_class import Background
 
 
@@ -49,32 +50,41 @@ with mp_holistic.Hands(
 
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+        hand_list = []
         if results.multi_hand_landmarks:
             hand_cnt = 0
-            hand_list = []
             for hand_landmarks in results.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
                     image, hand_landmarks, mp_holistic.HAND_CONNECTIONS)
                 hand = Hand(hand_landmarks.landmark, wide, high)
                 hand_list.append(hand)
 
-                for img in img_list:
-                    if img.ispointin(hand.centerx, hand.centery) is True:
-                        if hand.ishand_close() is True and img.move_flag is False:
-                            img.set_abspoint(hand.centerx, hand.centery)
+        near_index = []
+        if hand_list != []:
+            for i, img in enumerate(img_list):
+                near_index.append(0)
+                for j, hand in enumerate(hand_list):
+                    if j == 0:
+                        continue
 
-                        if img.move_flag is True and hand.ishand_open() is True:
-                            img.fin_change()
+                    im_center_x, im_center_y = img.center()
+                    if comp_point(im_center_x, im_center_y, hand.centerx, hand.centery, hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) == 1:
+                        near_index[i] = j
+            print("near_index", near_index)
 
-                    if img.move_flag is True and hand_cnt == 0:
-                        hand_cnt += 1
-                        img.change_point(
-                            hand.centerx, hand.centery, wide, high)
+            for i, img in enumerate(img_list):
 
-        ner_index = []
-        for img in enumerate(img_list):
+                if img.ispointin(hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) is True:
+                    if hand_list[near_index[i]].ishand_close() is True and img.move_flag is False:
+                        img.set_abspoint(
+                            hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery)
 
-            pass
+                    if img.move_flag is True and hand_list[near_index[i]].ishand_open() is True:
+                        img.fin_change()
+
+                if img.move_flag is True and hand_cnt == 0:
+                    img.change_point(
+                        hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery, wide, high)
 
         for img in img_list:
             if img.move_flag is True:
