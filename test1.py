@@ -68,10 +68,13 @@ with mp_holistic.Hands(
                         continue
 
                     im_center_x, im_center_y = img.center()
+                    print(im_center_x, im_center_y)
                     if comp_point(im_center_x, im_center_y, hand.centerx, hand.centery, hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) == 1:
                         near_index[i] = j
 
             for i, img in enumerate(img_list):
+                if near_index == []:
+                    break
 
                 if img.ispointin(hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) is True:
                     if hand_list[near_index[i]].ishand_close() is True and img.move_flag is False:
@@ -84,8 +87,17 @@ with mp_holistic.Hands(
                 if img.move_flag is True and hand_cnt == 0:
                     img.change_point(
                         hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery, wide, high)
+                    near_index = [
+                        index for index in near_index if index != near_index[i]]
 
-        for img in img_list:
+        fit_imlist = []
+        for i, img in enumerate(img_list):
+            if img.move_flag is True:
+                fit_imlist.insert(len(fit_imlist), img)
+            else:
+                fit_imlist.insert(0, img)
+
+        for img in fit_imlist:
             if img.move_flag is True:
                 img.del_frame()
                 img.add_frame(5, [0, 0, 255])
