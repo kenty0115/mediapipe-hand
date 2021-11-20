@@ -70,7 +70,6 @@ with mp_holistic.Hands(
                     im_center_x, im_center_y = img.center()
                     if comp_point(im_center_x, im_center_y, hand.centerx, hand.centery, hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) == 1:
                         near_index[i] = j
-            print("near_index", near_index)
 
             for i, img in enumerate(img_list):
 
