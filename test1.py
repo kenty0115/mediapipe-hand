@@ -41,6 +41,7 @@ with mp_holistic.Hands(
 
         if first_loop is True:
             first_loop = False
+            print(image.shape)
             for img in img_list:
                 img.resize_per(high, wide, obj_per)
                 print(img.img.shape)
@@ -52,7 +53,6 @@ with mp_holistic.Hands(
 
         hand_list = []
         if results.multi_hand_landmarks:
-            hand_cnt = 0
             for hand_landmarks in results.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
                     image, hand_landmarks, mp_holistic.HAND_CONNECTIONS)
@@ -68,27 +68,41 @@ with mp_holistic.Hands(
                         continue
 
                     im_center_x, im_center_y = img.center()
-                    print(im_center_x, im_center_y)
+                    print("im_point", img.point_x, img.point_y)
+                    print("im_center", im_center_x, im_center_y)
                     if comp_point(im_center_x, im_center_y, hand.centerx, hand.centery, hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) == 1:
                         near_index[i] = j
 
-            for i, img in enumerate(img_list):
+            # 画像を動かしたりする処理
+            cnt = 0
+            for img in img_list:
+                if cnt != 0:
+                    cnt -= 1
+                    continue
+
                 if near_index == []:
                     break
 
-                if img.ispointin(hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) is True:
-                    if hand_list[near_index[i]].ishand_close() is True and img.move_flag is False:
-                        img.set_abspoint(
-                            hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery)
+                now_index = near_index[0]
 
-                    if img.move_flag is True and hand_list[near_index[i]].ishand_open() is True:
+                if img.ispointin(hand_list[now_index].centerx, hand_list[now_index].centery) is True:
+                    if hand_list[now_index].ishand_close() is True and img.move_flag is False:
+                        img.set_abspoint(
+                            hand_list[now_index].centerx, hand_list[now_index].centery)
+
+                    if img.move_flag is True and hand_list[now_index].ishand_open() is True:
                         img.fin_change()
 
-                if img.move_flag is True and hand_cnt == 0:
+                if img.move_flag is True:
                     img.change_point(
-                        hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery, wide, high)
-                    near_index = [
-                        index for index in near_index if index != near_index[i]]
+                        hand_list[now_index].centerx, hand_list[now_index].centery, wide, high)
+                    # 一つの手に2つ以上の画像を持たせないようにする処理
+                    # near_index = [
+                    #     index for index in near_index if index != now_index]
+                    for j in near_index:
+                        if j == now_index:
+                            near_index.remove(j)
+                            cnt += 1
 
         fit_imlist = []
         for i, img in enumerate(img_list):
