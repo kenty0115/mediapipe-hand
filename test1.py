@@ -15,13 +15,13 @@ obj_per = 2
 data_dir_path = u"./img/"
 file_list = os.listdir(r'./img/')
 
-img_list = []
+background_list = []
 for file_name in file_list:
     root, ext = os.path.splitext(file_name)
     if ext == u'.png' or u'.jpeg' or u'.jpg':
         abs_name = data_dir_path + '/' + file_name
         image = cv2.imread(abs_name)
-        img_list.append(Background(image))
+        background_list.append(Background(image))
 
 
 first_loop = True
@@ -42,9 +42,9 @@ with mp_holistic.Hands(
         if first_loop is True:
             first_loop = False
             print(image.shape)
-            for img in img_list:
-                img.resize_per(high, wide, obj_per)
-                print(img.img.shape)
+            for background in background_list:
+                background.resize_per(high, wide, obj_per)
+                print(background.img.shape)
         image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
         results = hands.process(image)
@@ -61,21 +61,21 @@ with mp_holistic.Hands(
 
         near_index = []
         if hand_list != []:
-            for i, img in enumerate(img_list):
+            for i, background in enumerate(background_list):
                 near_index.append(0)
                 for j, hand in enumerate(hand_list):
                     if j == 0:
                         continue
 
-                    im_center_x, im_center_y = img.center()
-                    print("im_point", img.point_x, img.point_y)
+                    im_center_x, im_center_y = background.center()
+                    print("im_point", background.point_x, background.point_y)
                     print("im_center", im_center_x, im_center_y)
                     if comp_point(im_center_x, im_center_y, hand.centerx, hand.centery, hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) == 1:
                         near_index[i] = j
 
             # 画像を動かしたりする処理
             cnt = 0
-            for img in img_list:
+            for background in background_list:
                 if cnt != 0:
                     cnt -= 1
                     continue
@@ -84,17 +84,16 @@ with mp_holistic.Hands(
                     break
 
                 now_index = near_index[0]
-
-                if img.ispointin(hand_list[now_index].centerx, hand_list[now_index].centery) is True:
-                    if hand_list[now_index].ishand_close() is True and img.move_flag is False:
-                        img.set_abspoint(
+                if background.ispointin(hand_list[now_index].centerx, hand_list[now_index].centery) is True:
+                    if hand_list[now_index].ishand_close() is True and background.move_flag is False:
+                        background.set_abspoint(
                             hand_list[now_index].centerx, hand_list[now_index].centery)
 
-                    if img.move_flag is True and hand_list[now_index].ishand_open() is True:
-                        img.fin_change()
+                    if background.move_flag is True and hand_list[now_index].ishand_open() is True:
+                        background.fin_change()
 
-                if img.move_flag is True:
-                    img.change_point(
+                if background.move_flag is True:
+                    background.change_point(
                         hand_list[now_index].centerx, hand_list[now_index].centery, wide, high)
                     # 一つの手に2つ以上の画像を持たせないようにする処理
                     # near_index = [
@@ -105,23 +104,21 @@ with mp_holistic.Hands(
                             cnt += 1
 
         fit_imlist = []
-        for i, img in enumerate(img_list):
-            if img.move_flag is True:
-                fit_imlist.insert(len(fit_imlist), img)
+        for i, background in enumerate(background_list):
+            if background.move_flag is True:
+                fit_imlist.insert(len(fit_imlist), background)
             else:
-                fit_imlist.insert(0, img)
+                fit_imlist.insert(0, background)
 
-        for img in fit_imlist:
-            if img.move_flag is True:
-                img.del_frame()
-                img.add_frame(5, [0, 0, 255])
-                image[img.point_y:img.point_y+img.img.shape[0],
-                      img.point_x:img.point_x+img.img.shape[1]] = img.img
+        for background in fit_imlist:
+            if background.move_flag is True:
+                background.del_frame()
+                background.add_frame(5, [0, 0, 255])
+                background.comb_main(image)
             else:
-                img.del_frame()
-                img.add_frame(5, [0, 255, 0])
-                image[img.point_y:img.point_y+img.img.shape[0],
-                      img.point_x:img.point_x+img.img.shape[1]] = img.img
+                background.del_frame()
+                background.add_frame(5, [0, 255, 0])
+                background.comb_main(image)
 
         cv2.imshow('MediaPipe Hands', image)
         if cv2.waitKey(5) & 0xFF == 27:

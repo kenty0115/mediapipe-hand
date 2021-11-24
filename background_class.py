@@ -98,3 +98,8 @@ class Background(object):
 
     def center(self):
         return self.point_x + int(self.img.shape[1]/2), self.point_y + int(self.img.shape[0]/2)
+
+    def comb_main(self, image):
+        image[self.point_y:self.point_y+self.img.shape[0],
+              self.point_x:self.point_x+self.img.shape[1]] = self.img
+        return image
