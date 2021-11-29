@@ -4,21 +4,20 @@ import mediapipe as mp
 import cv2
 
 from hand_class import Hand
-from hand_class import comp_point
+from point_def import comp_point
 from background_class import Background
-
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.hands
 
-obj_per = 2
-data_dir_path = u"./img/"
-file_list = os.listdir(r'./img/')
+obj_per = 5
+data_dir_path = "./img/"
+file_list = os.listdir('./img/')
 
 background_list = []
 for file_name in file_list:
     root, ext = os.path.splitext(file_name)
-    if ext == u'.png' or u'.jpeg' or u'.jpg':
+    if ext == '.png' or '.jpeg' or '.jpg':
         abs_name = data_dir_path + '/' + file_name
         image = cv2.imread(abs_name)
         background_list.append(Background(image))
@@ -68,8 +67,6 @@ with mp_holistic.Hands(
                         continue
 
                     im_center_x, im_center_y = background.center()
-                    print("im_point", background.point_x, background.point_y)
-                    print("im_center", im_center_x, im_center_y)
                     if comp_point(im_center_x, im_center_y, hand.centerx, hand.centery, hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) == 1:
                         near_index[i] = j
 
@@ -80,6 +77,7 @@ with mp_holistic.Hands(
                     cnt -= 1
                     continue
 
+                print(near_index)
                 if near_index == []:
                     break
 
@@ -96,12 +94,12 @@ with mp_holistic.Hands(
                     background.change_point(
                         hand_list[now_index].centerx, hand_list[now_index].centery, wide, high)
                     # 一つの手に2つ以上の画像を持たせないようにする処理
-                    # near_index = [
-                    #     index for index in near_index if index != now_index]
                     for j in near_index:
                         if j == now_index:
                             near_index.remove(j)
                             cnt += 1
+                else:
+                    near_index.pop(0)
 
         fit_imlist = []
         for i, background in enumerate(background_list):
@@ -114,11 +112,11 @@ with mp_holistic.Hands(
             if background.move_flag is True:
                 background.del_frame()
                 background.add_frame(5, [0, 0, 255])
-                background.comb_main(image)
+                image = background.comb_main(image)
             else:
                 background.del_frame()
                 background.add_frame(5, [0, 255, 0])
-                background.comb_main(image)
+                image = background.comb_main(image)
 
         cv2.imshow('MediaPipe Hands', image)
         if cv2.waitKey(5) & 0xFF == 27:

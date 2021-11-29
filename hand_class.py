@@ -1,23 +1,12 @@
-import numpy as np
-
-
-# 点A(ax, ay)から点B(bx, by)と点C(cx, cy)を比べて点Bの方が近くの時1を返す。その他0
-def comp_point(ax, ay, bx, by, cx, cy):
-    a = np.array((ax, ay))
-    b = np.array((bx, by))
-    c = np.array((cx, cy))
-    if np.linalg.norm(a-b) < np.linalg.norm(a-c):
-        return 1
-    else:
-        return 0
+from point_def import comp_point
 
 
 class Hand(object):
 
-    def __init__(self, landmark: list, wide, high):
+    def __init__(self, landmark: list, heigh, width):
         self.landmark = landmark
-        self.wide = wide
-        self.high = high
+        self.heigh = heigh
+        self.width = width
         self.point_list = self.hand_point()
         self.centerx, self.centery = self.hand_center()
         self.hand_num = self._hand_num()
@@ -25,8 +14,8 @@ class Hand(object):
     def hand_point(self):
         point_list = []
         for landmark in self.landmark:
-            x_point = int(self.wide * landmark.x)
-            y_point = int(self.high * landmark.y)
+            x_point = int(self.width * landmark.x)
+            y_point = int(self.heigh * landmark.y)
             point_list.append((x_point, y_point))
 
         self.hand_point = point_list

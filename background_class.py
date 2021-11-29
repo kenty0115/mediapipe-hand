@@ -12,6 +12,7 @@ class Background(object):
         self.abs_x = 0
         self.abs_y = 0
         self.move_flag = False
+        self.hand = None
 
     def add_frame(self, fr_pic: int, color: list):
         cp_img = self.img
@@ -54,13 +55,13 @@ class Background(object):
     def ispointin(self, pointx, pointy):
         return (self.point_x <= pointx <= self.point_x + self.img.shape[1]) and (self.point_y <= pointy <= self.point_y + self.img.shape[0])
 
-    def resize_per(self, high: int, wide: int, per: int):
-        if self.img.shape[0]/high > self.img.shape[1]/wide:
-            rsize = high / per
+    def resize_per(self, heigh: int, width: int, per: int):
+        if self.img.shape[0]/heigh > self.img.shape[1]/width:
+            rsize = heigh / per
             resize_img = cv2.resize(
                 self.img, (int(self.img.shape[1] * rsize / self.img.shape[0]), int(rsize)))
         else:
-            rsize = wide / per
+            rsize = width / per
             resize_img = cv2.resize(self.img, (int(rsize), int(
                 self.img.shape[0] * rsize / self.img.shape[1])))
 
@@ -73,7 +74,7 @@ class Background(object):
         self.abs_x = pointx
         self.abs_y = pointy
 
-    def change_point(self, pointx, pointy, wide, high):
+    def change_point(self, pointx, pointy, width, heigh):
         self.point_x += pointx - self.abs_x
         self.point_y += pointy - self.abs_y
         self.abs_x = pointx
@@ -81,13 +82,13 @@ class Background(object):
 
         if self.point_x < 0:
             self.point_x = 0
-        elif self.point_x > wide - self.img.shape[1]:
-            self.point_x = wide - self.img.shape[1]
+        elif self.point_x > width - self.img.shape[1]:
+            self.point_x = width - self.img.shape[1]
 
         if self.point_y < 0:
             self.point_y = 0
-        elif self.point_y > high - self.img.shape[0]:
-            self.point_y = high - self.img.shape[0]
+        elif self.point_y > heigh - self.img.shape[0]:
+            self.point_y = heigh - self.img.shape[0]
 
         pass
 
