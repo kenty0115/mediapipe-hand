@@ -1,27 +1,18 @@
-import os
-
 import mediapipe as mp
 import cv2
 
 from hand_class import Hand
-from point_def import comp_point
-from background_class import Background
+from backgrounds_class import Backgrounds
+from comb_imghand import Imhand
+
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.hands
 
-obj_per = 5
-data_dir_path = "./img/"
-file_list = os.listdir('./img/')
-
-background_list = []
-for file_name in file_list:
-    root, ext = os.path.splitext(file_name)
-    if ext == '.png' or '.jpeg' or '.jpg':
-        abs_name = data_dir_path + '/' + file_name
-        image = cv2.imread(abs_name)
-        background_list.append(Background(image))
-
+obj_per = 3
+img_path = "./img/"
+backgrounds_class = Backgrounds()
+backgrounds_class.set_imgs_class(img_path)
 
 first_loop = True
 cap = cv2.VideoCapture(0)
@@ -35,15 +26,13 @@ with mp_holistic.Hands(
             print("Ignoring empty camera frame.")
             continue
 
-        wide = image.shape[1]
-        high = image.shape[0]
+        width = image.shape[1]
+        heigh = image.shape[0]
 
         if first_loop is True:
             first_loop = False
             print(image.shape)
-            for background in background_list:
-                background.resize_per(high, wide, obj_per)
-                print(background.img.shape)
+            backgrounds_class.resize_per(heigh, width, obj_per)
         image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
         results = hands.process(image)
@@ -55,68 +44,22 @@ with mp_holistic.Hands(
             for hand_landmarks in results.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
                     image, hand_landmarks, mp_holistic.HAND_CONNECTIONS)
-                hand = Hand(hand_landmarks.landmark, wide, high)
+                hand = Hand(hand_landmarks.landmark, heigh, width)
                 hand_list.append(hand)
+
+        imhand = Imhand(backgrounds_class.background_list, hand_list)
 
         near_index = []
         if hand_list != []:
-            for i, background in enumerate(background_list):
-                near_index.append(0)
-                for j, hand in enumerate(hand_list):
-                    if j == 0:
-                        continue
 
-                    im_center_x, im_center_y = background.center()
-                    if comp_point(im_center_x, im_center_y, hand.centerx, hand.centery, hand_list[near_index[i]].centerx, hand_list[near_index[i]].centery) == 1:
-                        near_index[i] = j
+            imhand.backgound_adhand()
 
-            # 画像を動かしたりする処理
-            cnt = 0
-            for background in background_list:
-                if cnt != 0:
-                    cnt -= 1
-                    continue
+            imhand.set_moveflag()
+            imhand.change_backgound_point(heigh, width)
 
-                print(near_index)
-                if near_index == []:
-                    break
+        backgrounds_class.set_fitlist()
 
-                now_index = near_index[0]
-                if background.ispointin(hand_list[now_index].centerx, hand_list[now_index].centery) is True:
-                    if hand_list[now_index].ishand_close() is True and background.move_flag is False:
-                        background.set_abspoint(
-                            hand_list[now_index].centerx, hand_list[now_index].centery)
-
-                    if background.move_flag is True and hand_list[now_index].ishand_open() is True:
-                        background.fin_change()
-
-                if background.move_flag is True:
-                    background.change_point(
-                        hand_list[now_index].centerx, hand_list[now_index].centery, wide, high)
-                    # 一つの手に2つ以上の画像を持たせないようにする処理
-                    for j in near_index:
-                        if j == now_index:
-                            near_index.remove(j)
-                            cnt += 1
-                else:
-                    near_index.pop(0)
-
-        fit_imlist = []
-        for i, background in enumerate(background_list):
-            if background.move_flag is True:
-                fit_imlist.insert(len(fit_imlist), background)
-            else:
-                fit_imlist.insert(0, background)
-
-        for background in fit_imlist:
-            if background.move_flag is True:
-                background.del_frame()
-                background.add_frame(5, [0, 0, 255])
-                image = background.comb_main(image)
-            else:
-                background.del_frame()
-                background.add_frame(5, [0, 255, 0])
-                image = background.comb_main(image)
+        image = backgrounds_class.fit_main(image)
 
         cv2.imshow('MediaPipe Hands', image)
         if cv2.waitKey(5) & 0xFF == 27:
