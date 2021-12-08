@@ -90,8 +90,6 @@ class Background(object):
         elif self.point_y > heigh - self.img.shape[0]:
             self.point_y = heigh - self.img.shape[0]
 
-        pass
-
     def fin_change(self):
         self.move_flag = False
         self.abs_x = 0

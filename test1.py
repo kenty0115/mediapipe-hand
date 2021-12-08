@@ -18,7 +18,7 @@ first_loop = True
 cap = cv2.VideoCapture(0)
 with mp_holistic.Hands(
         static_image_mode=True,
-        max_num_hands=2,
+        max_num_hands=1,
         min_detection_confidence=0.5) as hands:
     while cap.isOpened():
         success, image = cap.read()
@@ -26,8 +26,9 @@ with mp_holistic.Hands(
             print("Ignoring empty camera frame.")
             continue
 
-        width = image.shape[1]
+        # cap.set(cv2.CAP_PROP_FPS, 10)
         heigh = image.shape[0]
+        width = image.shape[1]
 
         if first_loop is True:
             first_loop = False
@@ -62,6 +63,6 @@ with mp_holistic.Hands(
         image = backgrounds_class.fit_main(image)
 
         cv2.imshow('MediaPipe Hands', image)
-        if cv2.waitKey(5) & 0xFF == 27:
+        if cv2.waitKey(20) & 0xFF == 27:
             break
 cap.release()

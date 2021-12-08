@@ -30,14 +30,16 @@ class Imhand(object):
 
     def change_backgound_point(self, heigh, width):
         hand_list = []
-        img_list = None
+        img_list = self.backgounds_class.copy()
         for background in self.backgounds_class:
             if background.move_flag is True:
                 hand_list.append(background.hand)
-                img_list = background
+                background.change_point(
+                    background.hand.centerx, background.hand.centery, width, heigh)
+                img_list.remove(background)
 
-        for background in self.backgounds_class:
-            if background.hand in hand_list and img_list != background:
+        for background in img_list:
+            if background.hand in hand_list:
                 background.move_flag = False
                 continue
 

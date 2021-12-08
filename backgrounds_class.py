@@ -41,7 +41,6 @@ class Backgrounds(object):
     def fit_main(self, img):
         img_a = img.copy()
         for background in self.fit_list:
-            print(background.move_flag)
             if background.move_flag is True:
                 background.del_frame()
                 background.add_frame(5, [0, 0, 255])
