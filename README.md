@@ -24,3 +24,12 @@ opencv-python         4.5.4.58
 opencv-contrib-python 4.5.4.58
 
 mediapipe             0.8.9
+
+# Testの説明
+## 実行方法
+\> python test1.py
+## 取り扱う画像
+
+./img/
+
+↑のファイルにある画像ファイル
