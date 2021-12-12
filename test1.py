@@ -13,6 +13,7 @@ obj_per = 3
 img_path = "./img/"
 
 first_loop = True
+cv2.namedWindow('MediaPipe Hand', cv2.WINDOW_AUTOSIZE)
 cap = cv2.VideoCapture(0)
 with mp_holistic.Hands(
         static_image_mode=True,
@@ -60,7 +61,7 @@ with mp_holistic.Hands(
 
         image = backgrounds_class.fit_main(image)
 
-        cv2.imshow('MediaPipe Hands', image)
+        cv2.imshow('MediaPipe Hand', image)
         if cv2.waitKey(20) & 0xFF == 27:
             break
 cap.release()
