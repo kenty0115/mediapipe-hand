@@ -11,8 +11,6 @@ mp_holistic = mp.solutions.hands
 
 obj_per = 3
 img_path = "./img/"
-backgrounds_class = Backgrounds()
-backgrounds_class.set_imgs_class(img_path)
 
 first_loop = True
 cap = cv2.VideoCapture(0)
@@ -33,6 +31,8 @@ with mp_holistic.Hands(
         if first_loop is True:
             first_loop = False
             print(image.shape)
+            backgrounds_class = Backgrounds()
+            backgrounds_class.set_imgs_class(img_path, heigh, width)
             backgrounds_class.resize_per(heigh, width, obj_per)
         image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
@@ -40,23 +40,21 @@ with mp_holistic.Hands(
 
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-        hand_list = []
+        hand_class = None
         if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                mp_drawing.draw_landmarks(
-                    image, hand_landmarks, mp_holistic.HAND_CONNECTIONS)
-                hand = Hand(hand_landmarks.landmark, heigh, width)
-                hand_list.append(hand)
+            hand_landmarks = results.multi_hand_landmarks[0]
+            hand_class = Hand(
+                results.multi_hand_landmarks[0].landmark, heigh, width)
+            mp_drawing.draw_landmarks(
+                image, hand_landmarks, mp_holistic.HAND_CONNECTIONS)
 
-        imhand = Imhand(backgrounds_class.background_list, hand_list)
+        if hand_class != None:
 
-        near_index = []
-        if hand_list != []:
-
-            imhand.backgound_adhand()
+            imhand = Imhand(backgrounds_class.background_list, hand_class)
+            imhand.background_adhand()
 
             imhand.set_moveflag()
-            imhand.change_backgound_point(heigh, width)
+            imhand.change_background_point()
 
         backgrounds_class.set_fitlist()
 

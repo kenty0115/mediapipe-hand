@@ -4,8 +4,10 @@ import cv2
 
 class Background(object):
 
-    def __init__(self, img):
+    def __init__(self, img, width, heigh):
         self.img = img
+        self.main_width = width
+        self.main_heigh = heigh
         self.fr_pic = 0
         self.point_x = 0
         self.point_y = 0
@@ -74,7 +76,7 @@ class Background(object):
         self.abs_x = pointx
         self.abs_y = pointy
 
-    def change_point(self, pointx, pointy, width, heigh):
+    def change_point(self, pointx, pointy):
         self.point_x += pointx - self.abs_x
         self.point_y += pointy - self.abs_y
         self.abs_x = pointx
@@ -82,13 +84,13 @@ class Background(object):
 
         if self.point_x < 0:
             self.point_x = 0
-        elif self.point_x > width - self.img.shape[1]:
-            self.point_x = width - self.img.shape[1]
+        elif self.point_x > self.main_width - self.img.shape[1]:
+            self.point_x = self.main_width - self.img.shape[1]
 
         if self.point_y < 0:
             self.point_y = 0
-        elif self.point_y > heigh - self.img.shape[0]:
-            self.point_y = heigh - self.img.shape[0]
+        elif self.point_y > self.main_heigh - self.img.shape[0]:
+            self.point_y = self.main_heigh - self.img.shape[0]
 
     def fin_change(self):
         self.move_flag = False

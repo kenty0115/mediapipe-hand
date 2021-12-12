@@ -11,7 +11,7 @@ class Backgrounds(object):
         self.background_list = []
         self.fit_list = []
 
-    def set_imgs_class(self, path: str):
+    def set_imgs_class(self, path: str, heigh, width):
         list_a = []
         file_list = os.listdir(path)
         for file_name in file_list:
@@ -19,7 +19,7 @@ class Backgrounds(object):
             if ext == '.png' or '.jpeg' or '.jpg':
                 abs_name = path + '/' + file_name
                 image = cv2.imread(abs_name)
-                list_a.append(Background(image))
+                list_a.append(Background(image, width, heigh))
 
         self.background_list = list_a
 
