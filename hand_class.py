@@ -12,17 +12,15 @@ class Hand(object):
         self.hand_num = self._hand_num()
 
     def hand_point(self):
-        point_list = []
-        for landmark in self.landmark:
-            x_point = int(self.width * landmark.x)
-            y_point = int(self.heigh * landmark.y)
-            point_list.append((x_point, y_point))
+        point_list = [(int(self.width * landmark.x), int(self.heigh * landmark.y))
+                      for landmark in self.landmark]
 
         self.hand_point = point_list
         return point_list
 
     def hand_center(self):
-        return int((self.point_list[0][0]+self.point_list[9][0])/2), int((self.point_list[0][1] + self.point_list[9][1])/2)
+        return int((self.point_list[0][0]+self.point_list[9][0]) /
+                   2), int((self.point_list[0][1] + self.point_list[9][1])/2)
 
     def ishand_open(self):
         return self.hand_num == 4

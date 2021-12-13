@@ -1,4 +1,5 @@
 import os
+from collections import deque
 
 import cv2
 
@@ -9,7 +10,7 @@ class Backgrounds(object):
 
     def __init__(self):
         self.background_list = []
-        self.fit_list = []
+        self.fit_que = None
 
     def set_imgs_class(self, path: str, heigh, width):
         list_a = []
@@ -28,19 +29,19 @@ class Backgrounds(object):
             background.resize_per(heigh, width, per)
 
     def set_fitlist(self):
-        fit_list = []
+        fit_que = deque()
         for background in self.background_list:
             if background.move_flag is True:
-                fit_list.insert(len(fit_list), background)
+                fit_que.append(background)
             else:
-                fit_list.insert(0, background)
-        self.fit_list = fit_list
+                fit_que.appendleft(background)
+        self.fit_que = fit_que
 
-        return fit_list
+        return fit_que
 
     def fit_main(self, img):
         img_a = img.copy()
-        for background in self.fit_list:
+        for background in self.fit_que:
             if background.move_flag is True:
                 background.del_frame()
                 background.add_frame(5, [0, 0, 255])

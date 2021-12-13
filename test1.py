@@ -5,6 +5,7 @@ from hand_class import Hand
 from backgrounds_class import Backgrounds
 from comb_imghand import Imhand
 
+import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.hands
@@ -53,13 +54,21 @@ with mp_holistic.Hands(
 
             imhand = Imhand(backgrounds_class.background_list, hand_class)
             imhand.background_adhand()
-
             imhand.set_moveflag()
             imhand.change_background_point()
 
         backgrounds_class.set_fitlist()
 
+        t1 = time.time()
+
         image = backgrounds_class.fit_main(image)
+
+        # 処理後の時刻
+        t2 = time.time()
+
+        # 経過時間を表示
+        elapsed_time = t2-t1
+        print(f"経過時間:{elapsed_time}")
 
         cv2.imshow('MediaPipe Hand', image)
         if cv2.waitKey(20) & 0xFF == 27:
