@@ -75,6 +75,9 @@ with mp_holistic.Hands(
         # # 経過時間を表示
         # elapsed_time = t2-t1
         # print(f"経過時間:{elapsed_time}")
+        if results.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(
+                image, results.multi_hand_landmarks[0], mp_holistic.HAND_CONNECTIONS)
         video.write(image)
 
         cv2.imshow('MediaPipe Hand', image)
