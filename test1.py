@@ -15,8 +15,8 @@ img_path = "./img/"
 
 first_loop = True
 cv2.namedWindow('MediaPipe Hand', cv2.WINDOW_AUTOSIZE)
-cv2.setWindowProperty(
-    'MediaPipe Hand', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+# cv2.setWindowProperty(
+#     'MediaPipe Hand', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 cap = cv2.VideoCapture(0)
 with mp_holistic.Hands(
         static_image_mode=True,
