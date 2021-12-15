@@ -10,3 +10,12 @@ def comp_point(ax, ay, bx, by, cx, cy):
         return 1
     else:
         return 0
+
+
+def comp_point2(ax, ay, bx, by, d):
+    a = np.array((ax, ay))
+    b = np.array((bx, by))
+    if np.linalg.norm(a-b) < d:
+        return 1
+    else:
+        return 0

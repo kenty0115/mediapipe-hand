@@ -59,16 +59,16 @@ with mp_holistic.Hands(
 
         backgrounds_class.set_fitlist()
 
-        t1 = time.time()
+        # t1 = time.time()
 
         image = backgrounds_class.fit_main(image)
 
-        # 処理後の時刻
-        t2 = time.time()
+        # # 処理後の時刻
+        # t2 = time.time()
 
-        # 経過時間を表示
-        elapsed_time = t2-t1
-        print(f"経過時間:{elapsed_time}")
+        # # 経過時間を表示
+        # elapsed_time = t2-t1
+        # print(f"経過時間:{elapsed_time}")
 
         cv2.imshow('MediaPipe Hand', image)
         if cv2.waitKey(20) & 0xFF == 27:

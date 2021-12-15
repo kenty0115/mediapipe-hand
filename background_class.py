@@ -1,13 +1,17 @@
 import numpy as np
 import cv2
 
+from point_def import comp_point2
+
 
 class Background(object):
 
     def __init__(self, img, width, heigh):
         self.img = img
+        self.framed_img = None
         self.main_width = width
         self.main_heigh = heigh
+        self.fr_color = None
         self.fr_pic = 0
         self.point_x = 0
         self.point_y = 0
@@ -77,20 +81,22 @@ class Background(object):
         self.abs_y = pointy
 
     def change_point(self, pointx, pointy):
-        self.point_x += pointx - self.abs_x
-        self.point_y += pointy - self.abs_y
-        self.abs_x = pointx
-        self.abs_y = pointy
+        d = max(self.img.shape[0], self.img.shape[1])
+        if comp_point2(self.abs_x, self.abs_y, pointx, pointy, d) == 1:
+            self.point_x += pointx - self.abs_x
+            self.point_y += pointy - self.abs_y
+            self.abs_x = pointx
+            self.abs_y = pointy
 
-        if self.point_x < 0:
-            self.point_x = 0
-        elif self.point_x > self.main_width - self.img.shape[1]:
-            self.point_x = self.main_width - self.img.shape[1]
+            if self.point_x < 0:
+                self.point_x = 0
+            elif self.point_x > self.main_width - self.img.shape[1]:
+                self.point_x = self.main_width - self.img.shape[1]
 
-        if self.point_y < 0:
-            self.point_y = 0
-        elif self.point_y > self.main_heigh - self.img.shape[0]:
-            self.point_y = self.main_heigh - self.img.shape[0]
+            if self.point_y < 0:
+                self.point_y = 0
+            elif self.point_y > self.main_heigh - self.img.shape[0]:
+                self.point_y = self.main_heigh - self.img.shape[0]
 
     def fin_change(self):
         self.move_flag = False
@@ -101,3 +107,7 @@ class Background(object):
         image[self.point_y:self.point_y+self.img.shape[0],
               self.point_x:self.point_x+self.img.shape[1]] = self.img
         return image
+
+    def isframe_color(self, color):
+        if self.fr_color == color:
+            pass
