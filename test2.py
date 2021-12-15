@@ -13,10 +13,13 @@ mp_holistic = mp.solutions.hands
 obj_per = 3
 img_path = "./img/"
 
+foucrr = cv2.VideoWriter_fourcc(*'XVID')
+# video = cv2.VideoWriter('test.avi', foucrr, 30, )
+
 first_loop = True
 cv2.namedWindow('MediaPipe Hand', cv2.WINDOW_AUTOSIZE)
-cv2.setWindowProperty(
-    'MediaPipe Hand', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+# cv2.setWindowProperty(
+#     'MediaPipe Hand', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 cap = cv2.VideoCapture(0)
 with mp_holistic.Hands(
         static_image_mode=True,
@@ -34,6 +37,7 @@ with mp_holistic.Hands(
 
         if first_loop is True:
             first_loop = False
+            video = cv2.VideoWriter('test.avi', foucrr, 30, (width, heigh))
             print(image.shape)
             backgrounds_class = Backgrounds()
             backgrounds_class.set_imgs_class(img_path, heigh, width)
@@ -71,8 +75,10 @@ with mp_holistic.Hands(
         # # 経過時間を表示
         # elapsed_time = t2-t1
         # print(f"経過時間:{elapsed_time}")
+        video.write(image)
 
         cv2.imshow('MediaPipe Hand', image)
         if cv2.waitKey(20) & 0xFF == 27:
             break
 cap.release()
+video.release()
