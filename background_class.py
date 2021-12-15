@@ -109,5 +109,11 @@ class Background(object):
         return image
 
     def isframe_color(self, color):
-        if self.fr_color == color:
+        return self.fr_color == color
+
+    def set_frcolor(self, color, fr_pic):
+        if self.isframe_color(color) is True:
             pass
+        else:
+            self.del_frame()
+            self.add_frame(fr_pic, color)

@@ -43,11 +43,11 @@ class Backgrounds(object):
         img_a = img.copy()
         for background in self.fit_que:
             if background.move_flag is True:
-                background.del_frame()
-                background.add_frame(5, [0, 0, 255])
+                color = [0, 0, 255]
+                background.set_frcolor(color, 5)
                 img_a = background.comb_main(img_a)
             else:
-                background.del_frame()
-                background.add_frame(5, [0, 255, 0])
+                color = [0, 255, 0]
+                background.set_frcolor(color, 5)
                 img_a = background.comb_main(img_a)
         return img_a
