@@ -14,7 +14,6 @@ obj_per = 3
 img_path = "./img/"
 
 foucrr = cv2.VideoWriter_fourcc(*'XVID')
-# video = cv2.VideoWriter('test.avi', foucrr, 30, )
 
 first_loop = True
 cv2.namedWindow('MediaPipe Hand', cv2.WINDOW_AUTOSIZE)
@@ -37,7 +36,7 @@ with mp_holistic.Hands(
 
         if first_loop is True:
             first_loop = False
-            video = cv2.VideoWriter('test.avi', foucrr, 30, (width, heigh))
+            video = cv2.VideoWriter('test1.avi', foucrr, 30, (width, heigh))
             print(image.shape)
             backgrounds_class = Backgrounds()
             backgrounds_class.set_imgs_class(img_path, heigh, width)
@@ -50,11 +49,8 @@ with mp_holistic.Hands(
 
         hand_class = None
         if results.multi_hand_landmarks:
-            hand_landmarks = results.multi_hand_landmarks[0]
             hand_class = Hand(
                 results.multi_hand_landmarks[0].landmark, heigh, width)
-            mp_drawing.draw_landmarks(
-                image, hand_landmarks, mp_holistic.HAND_CONNECTIONS)
 
         if hand_class != None:
 
@@ -75,6 +71,7 @@ with mp_holistic.Hands(
         # # 経過時間を表示
         # elapsed_time = t2-t1
         # print(f"経過時間:{elapsed_time}")
+
         if results.multi_hand_landmarks:
             mp_drawing.draw_landmarks(
                 image, results.multi_hand_landmarks[0], mp_holistic.HAND_CONNECTIONS)

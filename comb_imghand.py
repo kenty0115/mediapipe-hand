@@ -34,6 +34,7 @@ class Imhand(object):
                     if background.hand.ishand_close() is True and background.move_flag is False:
                         background.set_abspoint(
                             background.hand.centerx, background.hand.centery)
+                        break
 
                     if background.move_flag is True and background.hand.ishand_open() is True:
                         background.fin_change()

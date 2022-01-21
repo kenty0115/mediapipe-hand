@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import cv2
 
@@ -70,8 +72,11 @@ class Background(object):
             rsize = width / per
             resize_img = cv2.resize(self.img, (int(rsize), int(
                 self.img.shape[0] * rsize / self.img.shape[1])))
-
         self.img = resize_img
+
+        self.point_x = random.randint(0, self.main_width-self.img.shape[1]-10)
+        self.point_y = random.randint(
+            0, self.main_heigh - self.img.shape[0]-10)
 
         return resize_img
 
